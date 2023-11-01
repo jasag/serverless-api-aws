@@ -24,7 +24,7 @@ Lambda functions are the core of your serverless application. They execute the l
 
 DynamoDB is a fully managed NoSQL database service by AWS. It is used to store and retrieve data related to your serverless application. In this solution, DynamoDB is used to store the products data.
 
-![Lambda](images/dynamoDB.png)
+![DynamoDB](images/dynamoDB.png)
 
 ## Steps to deploy the solution
 
@@ -35,6 +35,20 @@ DynamoDB is a fully managed NoSQL database service by AWS. It is used to store a
 
 3. Create DynamoDB table.
 
+## Testing the API
+
+### Testing - Get Product
+
+![Get Product](images/postman-product-get-test.png)
+
+### Testing - Post Product
+
+![Post Product](images/postman-product-post-test.png)
+
+### Testing - Delete Product
+
+![Delete Product](images/postman-product-delete-test.png)
+
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for more details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for more details.
