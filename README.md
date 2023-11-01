@@ -10,13 +10,13 @@ This is a serverless solution that leverages Amazon Web Services (AWS) to build 
 
 ### AWS API Gateway
 
-The API Gateway serves as the entry point to the serverless API.
+The API Gateway serves as the entry point to the serverless API. As per mentioned above, this is a sample API and authorization/authentication are currently not used for simplication purposes.
 
 ![API Gateway](images/api-gateway.png)
 
 ### AWS Lambda
 
-Lambda functions are the core of your serverless application. They execute code in response to API Gateway requests. In this solution, the lambda function handle create, get and delete operations.
+Lambda functions are the core of your serverless application. They execute the logic in response to the API Gateway requests. In this solution, the lambda function handle create, get and delete operations.
 
 ![Lambda](images/lambda.png)
 
@@ -37,4 +37,4 @@ DynamoDB is a fully managed NoSQL database service by AWS. It is used to store a
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for more details.
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for more details.
