@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-east-1"
+  region = "eu-west-1"
 }
 
 ###################################
@@ -76,7 +76,7 @@ resource "aws_lambda_function" "lambda_function" {
   filename         = data.archive_file.lambda_function_zip.output_path
   source_code_hash = data.archive_file.lambda_function_zip.output_base64sha256
   role          = aws_iam_role.iam_for_lambda.arn
-  handler       = "lambda_handler"
+  handler       = "lambda_function.lambda_handler"
   runtime       = "python3.10"
 }
 
@@ -84,11 +84,18 @@ resource "aws_lambda_function" "lambda_function" {
 ###################################
 ######### API GATEWAY #############
 ###################################
+#
+# API Gateway Integration with Lambda example:
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_integration#lambda-integration
+#
 
 # Declare API Gateway
 resource "aws_api_gateway_rest_api" "serverless_api" {
   name        = "serverless-api"
   description = "Serverless API"
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
 }
 
 # Declare API Gateway resource
@@ -99,7 +106,7 @@ resource "aws_api_gateway_resource" "api_gateway_resource" {
 }
 
 # Declare API Gateway POST method
-resource "aws_api_gateway_method" "api_gateway_method" {
+resource "aws_api_gateway_method" "api_gateway_post_method" {
   rest_api_id   = aws_api_gateway_rest_api.serverless_api.id
   resource_id   = aws_api_gateway_resource.api_gateway_resource.id
   http_method   = "POST"
@@ -107,17 +114,19 @@ resource "aws_api_gateway_method" "api_gateway_method" {
 }
 
 # Declare API Gateway integration for POST method with lambda
-resource "aws_api_gateway_integration" "api_gateway_integration" {
+resource "aws_api_gateway_integration" "api_gateway_post_integration" {
   rest_api_id = aws_api_gateway_rest_api.serverless_api.id
   resource_id = aws_api_gateway_resource.api_gateway_resource.id
-  http_method = aws_api_gateway_method.api_gateway_method.http_method
+  http_method = aws_api_gateway_method.api_gateway_post_method.http_method
   type        = "AWS_PROXY"
   integration_http_method = "POST"
   uri = aws_lambda_function.lambda_function.invoke_arn
 }
 
 # Declare API Gateway GET method
-resource "aws_api_gateway_method" "api_gateway_method" {
+# Note integration_http_method must be POST for all methods
+# https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html
+resource "aws_api_gateway_method" "api_gateway_get_method" {
   rest_api_id   = aws_api_gateway_rest_api.serverless_api.id
   resource_id   = aws_api_gateway_resource.api_gateway_resource.id
   http_method   = "GET"
@@ -125,17 +134,17 @@ resource "aws_api_gateway_method" "api_gateway_method" {
 }
 
 # Declare API Gateway integration for GET method with lambda
-resource "aws_api_gateway_integration" "api_gateway_integration" {
+resource "aws_api_gateway_integration" "api_gateway_get_integration" {
   rest_api_id = aws_api_gateway_rest_api.serverless_api.id
   resource_id = aws_api_gateway_resource.api_gateway_resource.id
-  http_method = aws_api_gateway_method.api_gateway_method.http_method
+  http_method = aws_api_gateway_method.api_gateway_get_method.http_method
   type        = "AWS_PROXY"
-  integration_http_method = "GET"
+  integration_http_method = "POST"
   uri = aws_lambda_function.lambda_function.invoke_arn
 }
 
 # Declare API Gateway DELETE method
-resource "aws_api_gateway_method" "api_gateway_method" {
+resource "aws_api_gateway_method" "api_gateway_delete_method" {
   rest_api_id   = aws_api_gateway_rest_api.serverless_api.id
   resource_id   = aws_api_gateway_resource.api_gateway_resource.id
   http_method   = "DELETE"
@@ -143,12 +152,12 @@ resource "aws_api_gateway_method" "api_gateway_method" {
 }
 
 # Declare API Gateway integration for DELETE method with lambda
-resource "aws_api_gateway_integration" "api_gateway_integration" {
+resource "aws_api_gateway_integration" "api_gateway_delete_integration" {
   rest_api_id = aws_api_gateway_rest_api.serverless_api.id
   resource_id = aws_api_gateway_resource.api_gateway_resource.id
-  http_method = aws_api_gateway_method.api_gateway_method.http_method
+  http_method = aws_api_gateway_method.api_gateway_delete_method.http_method
   type        = "AWS_PROXY"
-  integration_http_method = "DELETE"
+  integration_http_method = "POST"
   uri = aws_lambda_function.lambda_function.invoke_arn
 }
 
@@ -158,14 +167,21 @@ resource "aws_lambda_permission" "apigw_lambda" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.lambda_function.function_name
   principal     = "apigateway.amazonaws.com"
-
   # More: http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
   # source_arn = "*"
 }
 
 # Declare API Gateway deployment
 resource "aws_api_gateway_deployment" "api_gateway_deployment" {
-  depends_on = [aws_api_gateway_integration.api_gateway_integration]
   rest_api_id = aws_api_gateway_rest_api.serverless_api.id
-  stage_name  = "Development"
+  depends_on = [ aws_api_gateway_integration.api_gateway_get_integration,
+    aws_api_gateway_integration.api_gateway_post_integration,
+    aws_api_gateway_integration.api_gateway_delete_integration ]
+}
+
+# Declare API Gateway stage
+resource "aws_api_gateway_stage" "api_gateway_stage" {
+  deployment_id = aws_api_gateway_deployment.api_gateway_deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.serverless_api.id
+  stage_name    = "Development"
 }
