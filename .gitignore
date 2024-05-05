@@ -199,3 +199,11 @@ terraform.rc
 
 # Ignore ZIP files
 *.zip
+
+# Gitignore for CDK
+*.swp
+package-lock.json
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out

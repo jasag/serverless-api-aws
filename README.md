@@ -1,6 +1,6 @@
-# serverless-api-aws
+# Serverless API AWS Sample
 
-This is a serverless solution that leverages Amazon Web Services (AWS) to build a sample scalable and cost-effective API in order to get/create/delete products. It uses AWS API Gateway, AWS Lambda, and AWS DynamoDB to mange the API calls, execute the previously mentioned actions, and store the data.
+This is a serverless solution that leverages Amazon Web Services (AWS) to build a sample scalable and cost-effective API in order to get/create/delete products. It uses AWS **API Gateway, AWS Lambda, and AWS DynamoDB** to manage the API calls, execute the previously mentioned actions, and store the data. **This solution can be deployed manually, using Terraform or CDK**. See each of the sections for more details.
 
 ## Table of Contents
 
@@ -8,6 +8,9 @@ This is a serverless solution that leverages Amazon Web Services (AWS) to build 
 - [Components](#components)
 - [Prerequisites](#prerequisites)
 - [Deployment](#deployment)
+   - [Deployment using Terraform](#Deployment-using-Terraform)
+   - [Deployment using CDK](#Deployment-using-CDK)
+   - [Deployment manually](#Deployment-manually)
 - [Testing the API](#testing-the-api)
 - [License](#license)
 
@@ -41,12 +44,18 @@ Before you begin, if you would like to use this repository, ensure you have the 
 
 - **AWS Account**: You must have an AWS account. If you don't have one, you can create one [here](https://aws.amazon.com/).
 - **AWS CLI**: Install and configure the AWS Command Line Interface (CLI) with your AWS access and secret keys. You can install the AWS CLI by following the instructions [here](https://aws.amazon.com/cli/).
-- **Terraform**: Make sure you have Terraform installed on your local machine. You can download it from [here](https://www.terraform.io/downloads.html).
+- **(Optional) Terraform**: If you would like to use Terraform to deploy this solution, make sure you have Terraform installed on your local machine. You can download it from [here](https://www.terraform.io/downloads.html).
+- **(Optional) CDK**: If you would like to use CDK to deploy this solution, make sure you have Node.js and CDK installed locally, see below more details. You can also refer to the [Getting started with the AWS CDK
+](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html#getting_started_background) AWS Documentation on this for a more detailed overview.
+   - **Intalled Node.js**: You can see more details steps [here](https://cdkworkshop.com/15-prerequisites/300-nodejs.html).
+   - **Intalled CDK**: You can see more details steps [here](https://cdkworkshop.com/15-prerequisites/500-toolkit.html).
 - **Git**: If you want to clone this repository, you need Git installed. You can download it from [here](https://git-scm.com/downloads).
 
 Finally, note that the Terraform template is by default configured to deploy the resources in the ```eu-west-1``` region, you can easily change this on the second line of the ```main.tf``` file to your preferred AWS region.
 
 ## Deployment
+
+### Deployment using Terraform
 
 To deploy this serverless solution using Terraform, follow the steps below:
 
@@ -81,7 +90,48 @@ To deploy this serverless solution using Terraform, follow the steps below:
    terraform destroy
    ```
 
-### Steps to deploy the solution manually
+### Deployment using CDK
+
+To deploy this serverless solution using AWS CDK, follow the steps below. Kindly note that the DynamoDB table has been created with the ```RemovalPolicy.DESTROY```, this will result in the deletion of the DynamoDB table. Kindly remove this property prior creation if you would like to keep the table and its data when you delete the stack.
+
+1. **Clone the Repository**: Clone this repository to your local environment:
+
+   ```bash
+   git clone https://github.com/jasag/serverless-api-aws.git
+   ```
+
+2. **Move into the repository folder.**
+
+   ```bash
+   cd serverless-api-aws/cdk
+   ```
+
+3. **Activate the app's Python virtual environment and install the AWS CDK core dependencies**
+
+   ```bash
+   source .venv/bin/activate
+   python3 -m pip install -r requirements.txt
+   ```
+
+4. **Bootstrap the environment**: Run the below command to bootstrap the environment. See more details about this step [here](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html).
+
+   ```bash
+   cdk bootstrap
+   ```
+
+5. **Deploy the CDK Stack**: Run the below command to deploy the solution.
+
+   ```bash
+   cdk deploy
+   ```
+
+6. **Destroy the CDK Stack**: Run the below command to deploy the solution.
+
+   ```bash
+   cdk destroy
+   ```
+
+### Deployment manually
 
 Alternatively, you can choose to deploy this manually to familiarize further with the services/steps required.
 
