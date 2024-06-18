@@ -160,3 +160,6 @@ Alternatively, you can choose to deploy this manually to familiarize further wit
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for more details.
+
+### Infrastructure model
+![jasag_serverless-api-aws](https://github.com/jasag/serverless-api-aws/assets/173192552/8afc884b-066a-435a-b41e-3d1140ee3ec9)
