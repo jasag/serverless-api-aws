@@ -160,3 +160,7 @@ Alternatively, you can choose to deploy this manually to familiarize further wit
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for more details.
+### Infrastructure model
+![Infrastructure main model](.infragenie/infrastructure_main_model.svg)
+
+---
